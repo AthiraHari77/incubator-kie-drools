@@ -185,6 +185,7 @@ public class DMNInputDataTransitiveImportTest {
         assertThat(result.hasErrors()).isFalse();
     }
 
+
     @Test
     void testImport()  {
         List<Resource> resources = Arrays.asList(

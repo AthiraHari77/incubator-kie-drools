@@ -233,19 +233,20 @@ class ItemDefinitionDependenciesTest {
 
     @Test
     void testTypeRefWhenPresent() {
+        String nameSpace = "ns";
         QName expected = new QName("ns", "date");
         ItemDefinition item = new TItemDefinition();
         item.setTypeRef(expected);
 
-        QName result = retrieveTypeRef(item, DMNVersion.V1_2);
+        QName result = retrieveTypeRef(item, nameSpace, DMNVersion.V1_2);
         assertThat(expected).isEqualTo(result);
     }
 
     @Test
     void testTypeRefNull() {
         ItemDefinition item = new TItemDefinition();
-
-        QName result = retrieveTypeRef(item, DMNVersion.V1_2);
+        String nameSpace = "ns";
+        QName result = retrieveTypeRef(item, nameSpace, DMNVersion.V1_2);
         assertThat(result).isNull();
     }
 
@@ -253,10 +254,11 @@ class ItemDefinitionDependenciesTest {
     void testRetrieveTypeRefFromFunctionItem() {
         ItemDefinition id = new TItemDefinition();
         FunctionItem fi = new TFunctionItem();
-        QName type = new QName("ns", "date");
+        String nameSpace = "ns";
+        QName type = new QName(nameSpace, "date");
         fi.setOutputTypeRef(type);
         id.setFunctionItem(fi);
-        QName result = retrieveTypeRef(id, DMNVersion.V1_3);
+        QName result = retrieveTypeRef(id, nameSpace, DMNVersion.V1_3);
         assertThat(type).isEqualTo(result);
     }
 
@@ -264,10 +266,11 @@ class ItemDefinitionDependenciesTest {
     void retrieveTypeRef_withUnsupportedDMNVersion() {
         ItemDefinition id = new TItemDefinition();
         FunctionItem fi = new TFunctionItem();
-        QName type = new QName("ns", "date");
+        String nameSpace = "ns";
+        QName type = new QName(nameSpace, "date");
         fi.setOutputTypeRef(type);
         id.setFunctionItem(fi);
-        QName result = retrieveTypeRef(id, DMNVersion.V1_2);
+        QName result = retrieveTypeRef(id, nameSpace, DMNVersion.V1_2);
         assertThat(result).isNull();
     }
 

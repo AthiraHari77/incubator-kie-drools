@@ -115,6 +115,23 @@ public class DMNRuntimeTest extends BaseInterpretedVsCompiledTest {
 
     @ParameterizedTest
     @MethodSource("params")
+    // TODO TO BE REMOVED
+    void puppa(boolean useExecModelCompiler) {
+        init(useExecModelCompiler);
+        final DMNRuntime runtime = DMNRuntimeUtil.createRuntime("1157-implicit-conversions.dmn", this.getClass());
+        final DMNModel dmnModel = runtime.getModel("https://kie.org/dmn/_F9BB5760-8BCA-4216-AAD9-8BD4FB70802D", "1157-implicit-conversions");
+        assertThat(dmnModel).isNotNull();
+        assertThat(dmnModel.hasErrors()).as(DMNRuntimeUtil.formatMessages(dmnModel.getMessages())).isFalse();
+
+
+        final DMNResult dmnResult = runtime.evaluateAll(dmnModel, DMNFactory.newContext());
+        assertThat(dmnResult.hasErrors()).as(DMNRuntimeUtil.formatMessages(dmnResult.getMessages())).isFalse();
+
+        final DMNContext result = dmnResult.getContext();
+    }
+
+    @ParameterizedTest
+    @MethodSource("params")
     void simpleItemDefinition(boolean useExecModelCompiler) {
         init(useExecModelCompiler);
         final DMNRuntime runtime = DMNRuntimeUtil.createRuntime("simple-item-def.dmn", this.getClass());

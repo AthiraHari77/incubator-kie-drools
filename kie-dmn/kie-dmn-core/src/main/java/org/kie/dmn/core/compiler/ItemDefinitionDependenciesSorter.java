@@ -25,7 +25,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.kie.dmn.api.core.DMNVersion;
-import org.kie.dmn.model.api.FunctionItem;
 import org.kie.dmn.model.api.ItemDefinition;
 
 public class ItemDefinitionDependenciesSorter {

@@ -54,7 +54,7 @@ class ItemDefinitionDependenciesTest {
     }
 
     private List<ItemDefinition> orderingStrategy(final List<ItemDefinition> ins) {
-        return new ItemDefinitionDependenciesSorter(TEST_NS).sort(ins);
+        return new ItemDefinitionDependenciesSorter(TEST_NS).sort(ins, DMNVersion.getLatest());
     }
 
     @Test

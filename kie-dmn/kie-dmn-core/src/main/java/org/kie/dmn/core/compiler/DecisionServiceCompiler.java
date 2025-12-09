@@ -330,7 +330,7 @@ public class DecisionServiceCompiler implements DRGElementCompiler {
     }
 
     private boolean isReturnTypeCompatible(QName fiReturnType, QName fdReturnType, DMNModelImpl model) {
-        if (fdReturnType.equals(fdReturnType)) {
+        if (fiReturnType.equals(fdReturnType)) {
             return true;
         }
 

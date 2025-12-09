@@ -2343,7 +2343,7 @@ public class DMNRuntimeTest extends BaseInterpretedVsCompiledTest {
                 .isTrue();
 
         final DMNContext result = dmnResult.getContext();
-        assertThat(result.get("Decide Vowel a")).isEqualTo("a");
+        assertThat(result.get("Decide Vowel a")).isEqualTo(Collections.singletonList("a"));
         assertThat(result.get("Decide BAD")).isNull();
     }
 
@@ -3790,6 +3790,23 @@ public class DMNRuntimeTest extends BaseInterpretedVsCompiledTest {
 
         assertThat(resolvedId).isEqualTo("ImportedModel#_D57E59F9-FC14-4B53-888C-CAADBA0AEFF6");
         assertThat(resolvedId2).isEqualTo("ImportedModel#_CE7D37D7-FC33-4C3A-AD3D-6EB6BECBC2B7");
+    }
+
+    @Test
+    void testDecisionService() {
+        DMNRuntime runtime = DMNRuntimeUtil.createRuntime(
+                "valid_models/DMNv1_6/Implicit-conversions/1157-implicit-conversions.dmn", this.getClass());
+
+        DMNModel model = runtime.getModel("https://kie.org/dmn/_F9BB5760-8BCA-4216-AAD9-8BD4FB70802D", "1157-implicit-conversions");
+        assertThat(model).isNotNull();
+        assertThat(model.hasErrors()).isFalse();
+
+        DMNContext dmnContext = runtime.newContext();
+        final DMNResult dmnResult = runtime.evaluateDecisionService(model, dmnContext, "To Singleton List DS");
+        assertThat(dmnResult.getDecisionResultByName("Body 1").getDecisionName()).isNotNull();
+
+        LocalDate date = LocalDate.of(2000, 1, 2);
+        assertThat(dmnResult.getContext().get("Body 1")).isEqualTo(Collections.singletonList(date));
     }
 
 }

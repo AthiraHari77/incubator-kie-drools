@@ -41,9 +41,11 @@ import org.kie.dmn.core.ast.InputDataNodeImpl;
 import org.kie.dmn.core.ast.ItemDefNodeImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
 import org.kie.dmn.core.impl.SimpleFnTypeImpl;
+import org.kie.dmn.core.impl.SimpleTypeImpl;
 import org.kie.dmn.core.util.Msg;
 import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.core.util.NamespaceUtil;
+import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.dmn.model.api.DMNElementReference;
 import org.kie.dmn.model.api.DRGElement;
 import org.kie.dmn.model.api.DecisionService;
@@ -275,7 +277,7 @@ public class DecisionServiceCompiler implements DRGElementCompiler {
         QName fiReturnType = fi.getOutputTypeRef();
         if (ni.getDecisionService().getOutputDecision().size() == 1) {
             QName fdReturnType = outputDecisions.get(0).getDecision().getVariable().getTypeRef();
-            if (fiReturnType != null && fdReturnType != null && !fiReturnType.equals(fdReturnType)) {
+            if (fiReturnType != null && fdReturnType != null && !isReturnTypeCompatible(fiReturnType, fdReturnType, model)) {
                 MsgUtil.reportMessage(LOG,
                                       DMNMessage.Severity.ERROR,
                                       ni.getDecisionService(),
@@ -325,6 +327,89 @@ public class DecisionServiceCompiler implements DRGElementCompiler {
                                       fdComposite);
             }
         }
+    }
+
+    private boolean isReturnTypeCompatible(QName fiReturnType, QName fdReturnType, DMNModelImpl model) {
+        if (fdReturnType.equals(fdReturnType)) {
+            return true;
+        }
+
+        DMNType fiType = resolveDMNType(fiReturnType, model);
+        DMNType fdType = resolveDMNType(fdReturnType, model);
+
+        if (fiType == null || fdType == null) {
+            return false;
+        }
+
+        if (fiType.equals(fdType)) {
+            return true;
+        }
+
+        if (!fiType.isCollection() && fdType.isCollection()) {
+            DMNType base = fdType.getBaseType();
+            return base == null || base.equals(fiType);
+        }
+        if (fiType.isCollection() && !fdType.isCollection()) {
+            DMNType base = fiType.getBaseType();
+            return base != null && base.equals(fdType);
+        }
+
+        if (isDateToDateTime(fiType, fdType)) {
+            return true;
+        }
+
+        if (isTypeAny(fdType)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private DMNType resolveDMNType(QName qName, DMNModelImpl model) {
+        DMNType type = model.getTypeRegistry().resolveType(model.getNamespace(), qName.getLocalPart());
+        if (type == null) {
+            BuiltInType bi = resolveBuiltInType(qName.getLocalPart());
+            if (bi != null) {
+                boolean isCollection = (bi == BuiltInType.LIST);
+                type = new SimpleTypeImpl(
+                        model.getNamespace(),
+                        bi.getName(),
+                        null,
+                        isCollection,
+                        null,
+                        null,
+                        null,
+                        bi
+                );
+            }
+        }
+        return type;
+    }
+
+    private boolean isTypeAny(DMNType t) {
+        return (t instanceof SimpleTypeImpl st)
+                && st.getFeelType() != null
+                && "Any".equals(st.getFeelType().getName());
+    }
+
+    private boolean isDateToDateTime(DMNType from, DMNType to) {
+        if (!(from instanceof SimpleTypeImpl f) || !(to instanceof SimpleTypeImpl t)) {
+            return false;
+        }
+        return "date".equals(f.getFeelType().getName())
+                && "dateTime".equals(t.getFeelType().getName());
+    }
+
+    private BuiltInType resolveBuiltInType(String name) {
+        if (name == null) return null;
+        for (BuiltInType t : BuiltInType.values()) {
+            for (String n : t.getNames()) {
+                if (n.equalsIgnoreCase(name)) {
+                    return t;
+                }
+            }
+        }
+        return null;
     }
 
 }

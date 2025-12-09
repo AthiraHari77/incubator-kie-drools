@@ -335,6 +335,7 @@ public class DMNRuntimeImpl
             }
             EvaluatorResult evaluate = new DMNDecisionServiceEvaluator(decisionService, true, false).evaluate(this,
                                                                                                               result); // please note singleton output coercion does not influence anyway when invoked DS on a model.
+            System.out.println("evaluate " + evaluate);
         } else {
             MsgUtil.reportMessage(logger,
                                   DMNMessage.Severity.ERROR,

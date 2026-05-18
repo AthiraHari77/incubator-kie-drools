@@ -48,6 +48,7 @@ import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.dmn.feel.runtime.FEELFunction;
 import org.kie.dmn.feel.runtime.Range;
 import org.kie.dmn.feel.runtime.UnaryTest;
+import org.kie.dmn.feel.runtime.custom.FormattedZonedDateTime;
 import org.kie.dmn.feel.util.EvalHelper;
 
 import static java.util.stream.Collectors.toMap;
@@ -149,7 +150,7 @@ public class JavaBackedType implements CompositeType {
             return BuiltInType.DATE;
         } else if( LocalTime.class.isAssignableFrom(clazz) || OffsetTime.class.isAssignableFrom(clazz) ) {
             return BuiltInType.TIME;
-        } else if( ZonedDateTime.class.isAssignableFrom(clazz) || OffsetDateTime.class.isAssignableFrom(clazz) || LocalDateTime.class.isAssignableFrom(clazz) || java.util.Date.class.isAssignableFrom(clazz) ) {
+        } else if( ZonedDateTime.class.isAssignableFrom(clazz) || OffsetDateTime.class.isAssignableFrom(clazz) || LocalDateTime.class.isAssignableFrom(clazz) || java.util.Date.class.isAssignableFrom(clazz) || FormattedZonedDateTime.class.isAssignableFrom(clazz)) {
             return BuiltInType.DATE_TIME;
         } else if (Duration.class.isAssignableFrom(clazz) || ChronoPeriod.class.isAssignableFrom(clazz)) {
             return BuiltInType.DURATION;

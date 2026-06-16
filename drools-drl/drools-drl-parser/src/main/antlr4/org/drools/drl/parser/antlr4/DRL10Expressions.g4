@@ -289,8 +289,6 @@ drlKeywords returns [Token token]
     | DRL_NO_LOOP
     | DRL_AUTO_FOCUS
     | DRL_LOCK_ON_ACTIVE
-    | DRL_REFRACT
-    | DRL_DIRECT
     | DRL_ACTIVATION_GROUP
     | DRL_RULEFLOW_GROUP
     | DRL_DATE_EFFECTIVE
@@ -803,14 +801,14 @@ creator
     ;
 
 createdName
-    :	drlIdentifier typeArguments?
-        ( DOT drlIdentifier typeArguments?)*
+    :	drlIdentifier typeArgumentsOrDiamond?
+        ( DOT drlIdentifier typeArgumentsOrDiamond? )*
         |	primitiveType
     ;
 
 // Old parser cannot parse innerCreator with selector expression (outer.new InnerClass() != null) TODO: Delete this after investigation
 innerCreator
-    :	{!(helper.validateIdentifierKey(DroolsSoftKeywords.INSTANCEOF))}? drlIdentifier classCreatorRestExpr
+    :	{!(helper.validateIdentifierKey(DroolsSoftKeywords.INSTANCEOF))}? drlIdentifier nonWildcardTypeArgumentsOrDiamond? classCreatorRestExpr
     ;
 
 arrayCreatorRest
@@ -839,6 +837,16 @@ explicitGenericInvocation
 
 nonWildcardTypeArguments
     :	LT typeList GT
+    ;
+
+typeArgumentsOrDiamond
+    : LT GT
+    | typeArguments
+    ;
+
+nonWildcardTypeArgumentsOrDiamond
+    : LT GT
+    | nonWildcardTypeArguments
     ;
 
 explicitGenericInvocationSuffix
